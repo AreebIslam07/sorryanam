@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Apology Letter For My Love</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ffcad4, #ff9eb8, #ff7fa7);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Floating hearts */
+  .heart {
+    position: fixed;
+    bottom: -10px;
+    font-size: 22px;
+    color: #ff2d6d;
+    animation: floatUp 6s linear forwards;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-120vh) scale(2); opacity: 0; }
+  }
+
+  /* Closed letter */
+  #closed-letter {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 35px;
+    width: 390px;
+    border-radius: 20px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.25);
+    text-align: center;
+    cursor: pointer;
+    transition: 0.4s;
+  }
+  #closed-letter:hover { transform: translate(-50%, -50%) scale(1.06); }
+
+  /* Opened letter */
+  #opened-letter {
+    display: none;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    padding: 35px;
+    width: 450px;
+    border-radius: 25px;
+    box-shadow: 0 0 35px rgba(0,0,0,0.3);
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: fadeIn 1s;
+  }
+
+  /* The picture ONLY shown after yes */
+  #love-pic {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 110px;
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translate(-50%, -45%); }
+    100% { opacity: 1; transform: translate(-50%, -50%); }
+  }
+
+  h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 45px;
+    color: #c30055;
+  }
+
+  p { font-size: 18px; line-height: 1.7; color: #333; }
+
+  .btn {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    cursor: pointer;
+    margin: 10px;
+    font-weight: 600;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }
+  .yes { background: #2ecc71; color: white; }
+  .no { background: #ff4b4b; color: white; }
+
+  /* Popup */
+  #popup {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    width: 320px;
+    border-radius: 18px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.3);
+    text-align: center;
+    animation: popIn 0.5s;
+    z-index: 9999;
+  }
+
+  @keyframes popIn {
+    0% { opacity: 0; transform: translate(-50%, -40%); }
+    100% { opacity: 1; transform: translate(-50%, -50%); }
+  }
+
+  /* Confetti */
+  #confetti-container div {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    animation: confFall 2.5s linear forwards;
+  }
+  @keyframes confFall {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100vh); opacity: 0; }
+  }
+
+  /* Mobile */
+  @media(max-width: 520px) {
+    #closed-letter, #opened-letter, #popup {
+      width: 85% !important;
+      padding: 22px !important;
+    }
+    #love-pic { width: 90px !important; }
+    .btn { width: 100%; margin-top: 10px; }
+    h2 { font-size: 32px !important; }
+    p { font-size: 16px !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Music -->
+<audio id="bg-music" autoplay loop>
+  <source src="https://files.catbox.moe/fm7jon.mp3" type="audio/mpeg">
+</audio>
+<script>
+document.addEventListener("click", () => {
+  document.getElementById("bg-music").play();
+}, { once: true });
+</script>
+
+<!-- Closed letter -->
+<div id="closed-letter">
+  <h2>💌 Tap to open your love letter</h2>
+</div>
+
+<!-- Opened letter -->
+<div id="opened-letter">
+  
+  <!-- The picture appears HERE only after yes -->
+  <img id="love-pic" src="https://files.catbox.moe/7hvfi1.PNG">
+
+  <h2>Apology Letter For My Love</h2>
+  <p id="typed-text"></p>
+  <p style="margin-top:20px; font-weight:600; font-size:19px;">Did you accept my apology?</p>
+
+  <button class="btn yes" onclick="accepted()">Yes</button>
+  <button class="btn no" onclick="reject()">No</button>
+</div>
+
+<!-- Popup -->
+<div id="popup"></div>
+<div id="confetti-container"></div>
+
+<script>
+let closed = document.getElementById("closed-letter");
+let opened = document.getElementById("opened-letter");
+let typed = document.getElementById("typed-text");
+let popup = document.getElementById("popup");
+let lovePic = document.getElementById("love-pic");
+let confArea = document.getElementById("confetti-container");
+
+let letterText = "I am really sorry for my conduct. I didn't do it intentionally. I told you I will not do it again but it happened by mistake and I'm really sorry for it. I promise I will do better and I will not naraz you again. ❤️";
+
+closed.onclick = () => {
+  closed.style.display = "none";
+  opened.style.display = "block";
+  typeText();
+};
+
+function typeText() {
+  let i = 0;
+  let typer = setInterval(() => {
+    typed.textContent += letterText[i];
+    i++;
+    if (i === letterText.length) clearInterval(typer);
+  }, 35);
+}
+
+setInterval(() => {
+  let h = document.createElement("div");
+  h.classList.add("heart");
+  h.style.left = Math.random() * 100 + "vw";
+  h.innerHTML = "❤️";
+  document.body.appendChild(h);
+  setTimeout(() => h.remove(), 6000);
+}, 600);
+
+function confetti() {
+  for (let i = 0; i < 120; i++) {
+    let c = document.createElement("div");
+    c.style.left = Math.random() * window.innerWidth + "px";
+    c.style.top = "-10px";
+    c.style.background = `hsl(${Math.random()*360},100%,50%)`;
+    confArea.appendChild(c);
+    setTimeout(() => c.remove(), 2500);
+  }
+}
+
+function accepted() {
+
+  // Show picture on the letter (top right)
+  lovePic.style.display = "block";
+
+  popup.innerHTML = `
+    <p style='font-size:18px;'>Thank you so much cutie ❤️<br>Take ss and send me 💗</p>
+    <button class='btn yes'>Thank You ❤️</button>
+  `;
+  popup.style.display = "block";
+
+  confetti();
+}
+
+let messages = [
+  "Really baby? 😭",
+  "Are you sure meri jaan? 🥺",
+  "Come on Anam, don't say no 😢",
+  "Please accept cutie 😭",
+  "Last chance my love 🥺",
+  "Please cutu 💔",
+  "Are Please na Yaar 😭",
+  "Please cutiee meri 🥹",
+  "Don't be mad na 😣",
+  "Just one yes? 💗"
+];
+let idx = 0;
+
+function reject() {
+  popup.innerHTML = `
+      <p style='font-size:18px;'>${messages[idx]}</p>
+      <button class='btn no' onclick="reject()">No I didn't accept</button>
+      <button class='btn yes' onclick="accepted()">Yes I accept</button>
+    `;
+  popup.style.display = "block";
+  idx = (idx + 1) % messages.length;
+}
+</script>
+
+</body>
+</html>
